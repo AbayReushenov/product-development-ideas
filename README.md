@@ -1,6 +1,6 @@
-# Идеи для изучения Английского языка
+# Идеи для развития продукта
 
-Веб-приложение для голосования за идеи изучения Английского языка с системой ограничений по IP-адресу.
+Веб-приложение для голосования за идеи развития продукта с системой ограничений по IP-адресу.
 
 ## Описание проекта
 
@@ -10,23 +10,23 @@
 
 ### Backend
 - **Node.js** + **TypeScript**
-- **Express.js** - веб-фреймворк
-- **PostgreSQL** - база данных
-- **pg** - драйвер PostgreSQL
-- **CORS** - настройка CORS
-- **Morgan** - логирование запросов
-- **Helmet** - безопасность
+- **Express.js** — веб-фреймворк
+- **PostgreSQL** — база данных
+- **pg** — драйвер PostgreSQL
+- **CORS** — настройка CORS
+- **Morgan** — логирование запросов
+- **Helmet** — безопасность
 
 ### Frontend
 - **React** + **TypeScript**
-- **Bootstrap 5** - стилизация
-- **Axios** - HTTP клиент
+- **Bootstrap 5** — стилизация
+- **Axios** — HTTP клиент
 
 ## Требования к системе
 
-- **Node.js** версии 16.0.0 или выше
-- **PostgreSQL** версии 12.0 или выше
-- **npm** или **yarn** для управления зависимостями
+- **Node.js** 16+ (рекомендовано LTS)
+- **PostgreSQL** 12+
+- **npm** или **yarn**
 
 ## Структура проекта
 
@@ -43,41 +43,31 @@ product_development_ideas/
 │   │   ├── services/       # Бизнес-логика
 │   │   └── utils/          # Утилиты
 │   ├── migrations/         # SQL миграции
-│   ├── scripts/           # Скрипты (migrate, seed)
+│   ├── scripts/            # Скрипты (migrate, seed)
 │   └── package.json
 ├── frontend/               # Frontend приложение
-│   ├── src/
-│   │   ├── components/     # React компоненты
-│   │   ├── services/       # API сервисы
-│   │   ├── types/          # TypeScript типы
-│   │   └── utils/          # Утилиты
-│   └── package.json
+│   ├── public/
+│   └── src/
+│       ├── components/     # React компоненты
+│       ├── services/       # API сервисы
+│       ├── types/          # TypeScript типы
+│       └── utils/          # Утилиты
+├── package.json            # Корневые скрипты
 └── README.md
 ```
 
-## Установка и запуск
+## Установка и настройка
 
-### 1. Клонирование и установка зависимостей
-
-```bash
-# Установка зависимостей для backend
-cd backend
-npm install
-
-# Установка зависимостей для frontend
-cd ../frontend
-npm install
-```
-
-### 2. Настройка переменных окружения
-
-Создайте файл `.env` в папке `backend` на основе `.env.example`:
+### 1) Установка зависимостей
 
 ```bash
-cp backend/.env.example backend/.env
+# из корня проекта
+npm run install:all
 ```
 
-Отредактируйте `.env` файл:
+### 2) Переменные окружения
+
+- Backend (`backend/.env`):
 
 ```env
 PORT=3000
@@ -85,7 +75,16 @@ DATABASE_URL=postgresql://username:password@localhost:5432/ideas_db
 NODE_ENV=development
 ```
 
-### 3. Настройка базы данных
+- Frontend (`frontend/.env.development` — опционально):
+
+```env
+# URL backend API
+REACT_APP_API_URL=http://localhost:3000/api
+```
+
+Подсказка: в проекте есть примеры в `.env.example` (в корне) и `backend/.env.example`.
+
+### 3) Подготовка базы данных
 
 1. Создайте базу данных PostgreSQL:
 
@@ -93,45 +92,44 @@ NODE_ENV=development
 CREATE DATABASE ideas_db;
 ```
 
-2. Примените миграции:
+2. Примените миграции и залейте тестовые данные:
 
 ```bash
-cd backend
+# из корня проекта
 npm run migrate
-```
-
-3. Заполните базу тестовыми данными:
-
-```bash
 npm run seed
 ```
 
-### 4. Запуск приложения
+(Команды используют ts-node и выполняют скрипты из `backend/scripts`).
 
-#### Backend (терминал 1):
+## Запуск приложения
 
-```bash
-cd backend
-npm run dev
-```
+Откройте два терминала.
 
-Backend будет доступен по адресу: http://localhost:3000
-
-#### Frontend (терминал 2):
+- Backend (терминал 1):
 
 ```bash
-cd frontend
-npm start
+npm run dev:backend
 ```
 
-Frontend будет доступен по адресу: http://localhost:3001
+Доступен по адресу: `http://localhost:3000`
+
+- Frontend (терминал 2):
+
+```bash
+npm run dev:frontend
+```
+
+Доступен по адресу: `http://localhost:3001`
+
+Если порт `3000` занят, измените `PORT` в `backend/.env` и убедитесь, что `REACT_APP_API_URL` указывает на актуальный адрес API.
 
 ## API Endpoints
 
 ### GET /api/ideas
 Получить список всех идей с количеством голосов.
 
-**Ответ:**
+Пример ответа:
 ```json
 {
   "success": true,
@@ -150,7 +148,7 @@ Frontend будет доступен по адресу: http://localhost:3001
 ### POST /api/ideas/:id/vote
 Проголосовать за идею.
 
-**Ответ при успехе:**
+Успех:
 ```json
 {
   "success": true,
@@ -162,7 +160,7 @@ Frontend будет доступен по адресу: http://localhost:3001
 }
 ```
 
-**Ответ при ошибке (лимит превышен):**
+Лимит превышен (HTTP 409):
 ```json
 {
   "success": false,
@@ -171,7 +169,7 @@ Frontend будет доступен по адресу: http://localhost:3001
 }
 ```
 
-**Ответ при ошибке (уже голосовал):**
+Повторное голосование (HTTP 409):
 ```json
 {
   "success": false,
@@ -181,9 +179,9 @@ Frontend будет доступен по адресу: http://localhost:3001
 ```
 
 ### GET /api/votes/my
-Получить список идей, за которые проголосовал текущий IP.
+Получить список id идей, за которые проголосовал текущий IP.
 
-**Ответ:**
+Пример ответа:
 ```json
 {
   "success": true,
@@ -196,60 +194,50 @@ Frontend будет доступен по адресу: http://localhost:3001
 - Один IP-адрес может проголосовать максимум за 10 разных идей
 - Повторное голосование за одну идею с того же IP невозможно
 - Доступ к приложению без регистрации и авторизации
-- IP-адрес извлекается из заголовков X-Forwarded-For, X-Real-IP или req.ip
+- IP извлекается из заголовков: `X-Forwarded-For` → `X-Real-IP` → `req.ip`
 
 ## Скрипты
 
+### Корневые
+- `npm run install:all` — установить зависимости фронта и бэка
+- `npm run migrate` — применить миграции (ts-node)
+- `npm run seed` — наполнить БД тестовыми данными (ts-node)
+- `npm run dev:backend` — старт backend (nodemon + ts-node)
+- `npm run dev:frontend` — старт frontend (react-scripts)
+
 ### Backend
-- `npm run dev` - запуск в режиме разработки
-- `npm run build` - сборка проекта
-- `npm run start` - запуск production-версии
-- `npm run migrate` - применение миграций
-- `npm run seed` - наполнение БД тестовыми данными
+- `npm run dev` — разработка (nodemon)
+- `npm run build` — сборка TypeScript в `dist`
+- `npm run start` — запуск production-версии из `dist`
 
 ### Frontend
-- `npm start` - запуск в режиме разработки
-- `npm run build` - сборка проекта
-- `npm test` - запуск тестов
+- `npm start` — разработка
+- `npm run build` — сборка
 
 ## Архитектура
 
 ### Backend (Layered Architecture)
-- **Routes** → **Controllers** → **Services** → **Repositories**
+- Routes → Controllers → Services → Repositories
 - Централизованная обработка ошибок
 - Транзакции для операций голосования
-- Параметризованные запросы для защиты от SQL-инъекций
-- Connection pool для PostgreSQL
+- Параметризованные запросы и пул подключений PostgreSQL
 
 ### Frontend (React + TypeScript)
 - Компонентная архитектура
-- Управление состоянием через useState/useEffect
-- Типизация с TypeScript
+- Состояние через `useState`/`useEffect`
 - Responsive дизайн с Bootstrap 5
 
-## Безопасность
+## Производительность и безопасность
 
-- Защита от SQL-инъекций через параметризованные запросы
-- CORS настройка для frontend
-- Helmet для безопасности HTTP заголовков
-- Валидация входных данных
-- Ограничения на количество голосов
+- Индексы в БД для ускорения запросов
+- Транзакции для атомарности
+- Helmet + CORS
+- Параметризованные запросы (SQL-инъекции)
 
-## Производительность
+## Траблшутинг
 
-- Индексы в базе данных для оптимизации запросов
-- Connection pool для PostgreSQL
-- Транзакции для атомарности операций
-- Оптимизированные SQL запросы с JOIN
-
-## Разработка
-
-Для разработки рекомендуется:
-
-1. Запустить backend в режиме разработки с hot reload
-2. Запустить frontend в режиме разработки
-3. Использовать PostgreSQL для локальной разработки
-4. Следить за логами в консоли для отладки
+- «EADDRINUSE: address already in use :::3000» — порт занят. Измените `PORT` в `backend/.env` и обновите `REACT_APP_API_URL` во фронтенде.
+- Ошибки миграций — проверьте `DATABASE_URL` и доступ к PostgreSQL, затем `npm run migrate` ещё раз.
 
 ## Лицензия
 

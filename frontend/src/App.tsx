@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Idea, AppState } from './types';
+import { AppState } from './types';
 import { ApiService } from './services/api';
 import IdeaList from './components/IdeaList';
 import ErrorMessage from './components/ErrorMessage';
