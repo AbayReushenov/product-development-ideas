@@ -55,6 +55,10 @@ product_development_ideas/
 ├── package.json            # Корневые скрипты
 └── README.md
 ```
+## Скриншот главной страницы
+
+![Главная страница](frontend/screenshots/screenshot_main.png)
+
 
 ## Установка и настройка
 
